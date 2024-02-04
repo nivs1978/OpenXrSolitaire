@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Solitaire : MonoBehaviour
 {
     public Texture2D[] cardFaces;
     public GameObject cardPrefab;
     public GameObject deckPrefab;
+    public List<GameObject> cardSlots;
+
+    Text hudText = null;
 
     public static string[] suits = new string[] { "C", "D", "H", "S" };
     public static string[] values = new string[] { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
@@ -14,16 +18,19 @@ public class Solitaire : MonoBehaviour
     public Stack<string> deck;
     List<string> deckSorted = GenerateDeck();
 
+    float heightStep = 0;
+
     // Start is called before the first frame update
     void Start()
     {
+        heightStep = (deckPrefab.transform.GetComponent<Renderer>().bounds.size.y*deckPrefab.transform.localScale.y)/52.0f;
+        hudText = GameObject.Find("HudText").GetComponent<Text>();
         PlayCards();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     public void PlayCards()
@@ -67,18 +74,15 @@ public class Solitaire : MonoBehaviour
 
     int GetCardIndex(string card)
     {
-        print("Finding index for card: " + card);
         int i = 0;
         foreach (string cardName in deckSorted)
         {
             if (card == cardName)
             {
-                print("Card index found: " + i);
                 return i;
             }
             i++;
         }
-        print("Card index not found");
         return -1;
     }
 
@@ -91,11 +95,16 @@ public class Solitaire : MonoBehaviour
     {
         if (deck.Count > 0)
         {
+            hudText.text = "Cards left: " + deck.Count;
             string card = deck.Pop();
-            print("Next card: " + card);
+//            var localScale = deckPrefab.transform.localScale;
+            var pos = deckPrefab.transform.position;
+//            localScale.y -= 1.5f/52;
+            pos.y -= 0.00028f;
+            deckPrefab.transform.position = pos;
+//            deckPrefab.transform.localScale = localScale;
             GameObject newCard = Instantiate(cardPrefab, new Vector3(deckPrefab.transform.position.x, deckPrefab.transform.position.y + 0.01f, deckPrefab.transform.position.z), Quaternion.identity);
             newCard.name = card;
-            print("Card set as fresh from deck");
             newCard.GetComponent<Card>().freshFromDeck = true;
             newCard.GetComponent<Rigidbody>().useGravity = true;
             newCard.transform.rotation = Quaternion.Euler(180, 0, 0);
@@ -110,9 +119,11 @@ public class Solitaire : MonoBehaviour
                     break;
                 }
             }
-        } else
-        {
-            print("No more cards in deck");
+            if (deck.Count == 0)
+            {
+                hudText.text = "No more cards in deck";
+                deckPrefab.SetActive(false);
+            }
         }
     }
 }
