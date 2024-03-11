@@ -38,6 +38,7 @@ Library: C:\Users\hans\Documents\Unity\Solitaire\Temp\BurstOutput\tempburstlibs\
 --assembly-defines=Unity.XR.Interaction.Toolkit.Samples.Hands;
 --assembly-defines=Unity.XR.Interaction.Toolkit.Samples.StarterAssets;
 --assembly-defines=Unity.XR.Management;
+--assembly-defines=Unity.XR.MetaOpenXR;
 --assembly-defines=Unity.XR.OpenXR;
 --assembly-defines=Unity.XR.OpenXR.Features.ConformanceAutomation;
 --assembly-defines=Unity.XR.OpenXR.Features.MetaQuestSupport;
@@ -93,6 +94,7 @@ Library: C:\Users\hans\Documents\Unity\Solitaire\Temp\BurstOutput\tempburstlibs\
 --assembly-defines=Unity.XR.Interaction.Toolkit.Samples.Hands;
 --assembly-defines=Unity.XR.Interaction.Toolkit.Samples.StarterAssets;
 --assembly-defines=Unity.XR.Management;
+--assembly-defines=Unity.XR.MetaOpenXR;
 --assembly-defines=Unity.XR.OpenXR;
 --assembly-defines=Unity.XR.OpenXR.Features.ConformanceAutomation;
 --assembly-defines=Unity.XR.OpenXR.Features.MetaQuestSupport;

@@ -107,7 +107,7 @@ public class Solitaire : MonoBehaviour
             newCard.name = card;
             newCard.GetComponent<Card>().freshFromDeck = true;
             newCard.GetComponent<Rigidbody>().useGravity = true;
-            newCard.transform.rotation = Quaternion.Euler(180, 0, 0);
+            newCard.transform.rotation = deckPrefab.transform.rotation; // Quaternion.Euler(180, 0, 0);
             var renderer = newCard.GetComponentInChildren<Renderer>();
             for (int i=0; i<renderer.materials.Length; i++)
             {

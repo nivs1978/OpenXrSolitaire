@@ -13,8 +13,7 @@ public class Card : MonoBehaviour
     private Rigidbody rb;
     public bool freshFromDeck = false;
     public bool leftDeck = false;
-    private GameObject snapTo = null;
-    private GameObject rotateTo = null;
+    public bool inHand = false;
     private GameObject gameDeck;
 
     // Start is called before the first frame update
@@ -61,23 +60,6 @@ public class Card : MonoBehaviour
             rb.velocity = Vector3.zero;
             transform.position = new Vector3(gameDeck.transform.position.x-0.1f, gameDeck.transform.position.y+0.1f, gameDeck.transform.position.z);
         }
-        if (snapTo != null)
-        {
-            var destinationPosition = snapTo.transform.position - transform.position;
-            transform.position += destinationPosition * Time.deltaTime * 2f;
-            if ((transform.position - snapTo.transform.position).magnitude < 0.001f) // Stop when close enough
-            {
-                snapTo = null;
-            }
-        }
-        if (rotateTo != null)
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotateTo.transform.rotation, Time.deltaTime * 2f);
-            if ((transform.rotation * Quaternion.Inverse(rotateTo.transform.rotation)).eulerAngles.magnitude < 0.1f) // Stop when close enough
-            {
-                rotateTo = null;
-            }
-        }
     }
 
     private IEnumerator delayInstantiateNewCard()
@@ -103,6 +85,10 @@ public class Card : MonoBehaviour
         {
             Debug.Log("Testing distance");
             var distanceToCardSlot = (transform.position - cardSlot.transform.position).magnitude;
+            if (distanceToCardSlot > 0.1f) // If more than 10 cm away, ignore this card slot
+            {
+                continue;
+            }
             if (distanceToCardSlot < minDistance)
             {
                 minDistance = distanceToCardSlot;
@@ -110,7 +96,38 @@ public class Card : MonoBehaviour
             }
         }
 
-
-        rotateTo = snapTo = target;
+        Rigidbody cardRigidbody = this.GetComponent<Rigidbody>();
+        GameObject newParent = null;
+        if (target != null)
+        {
+            if (target.name.StartsWith("Hand"))
+            { // Set the hand menu as parent and move the card to the slot in the hand
+                Debug.Log("Snap to hand");
+                // Disable physics
+                cardRigidbody.useGravity = false;
+                cardRigidbody.isKinematic = true;
+                newParent = GameObject.Find("HandMenu");
+                this.inHand = true;
+            } else
+            { // Set the table as parent and move the card to the slot on the table
+                Debug.Log("Snap to card slot on table");
+                // Enable physics
+                cardRigidbody.useGravity = false;
+                cardRigidbody.isKinematic = true;
+                newParent = GameObject.Find("/Table");
+                this.inHand = false;
+            }
+            this.transform.SetParent(newParent.transform, false);
+            this.transform.position = target.transform.position;
+            this.transform.rotation = target.transform.rotation;
+        } 
+        else
+        {
+            Debug.Log("Drop");
+            newParent = GameObject.Find("/Table");
+            this.transform.SetParent(newParent.transform, true);
+            cardRigidbody.useGravity = true;
+            cardRigidbody.isKinematic = false; 
+        }
     }
 }
